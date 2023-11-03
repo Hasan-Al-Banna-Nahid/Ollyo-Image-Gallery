@@ -1,0 +1,89 @@
+/* Image Grid Style */
+.imageGrid {
+  display: grid;
+  grid-template-columns: repeat(
+    4,
+    1fr
+  ); /* Adjust the number of columns as needed */
+  grid-gap: 15px; /* Adjust the gap between grid items as needed */
+  margin: 0 auto;
+  width: 1200px;
+  margin-top: 50px;
+}
+
+.imageGrid > div {
+  width: 100%;
+  border: 1px solid #b2bec3;
+}
+
+.FeaturedImageDiv {
+  grid-row: span 2; /* Make the first div span two rows */
+  width: 450px !important;
+  height: 100%;
+  border-radius: 8px;
+}
+.sameStyleDiv {
+  width: 180px;
+  height: 220px;
+  border-radius: 8px;
+}
+.imageGrid > div > img {
+  width: 100%;
+  height: 100%;
+  background-color: #b2bec306 !important;
+}
+/* Image Grid Style */
+.imageGrid input[type="checkbox"] {
+  width: 20px; /* Increase the width of the checkbox */
+  height: 20px; /* Increase the height of the checkbox */
+  margin-right: 10px; /* Add some spacing between the checkbox and the image */
+  transform: scale(1.5); /* Increase the size of the checkbox */
+}
+
+/* Add a glow effect when the checkbox is checked */
+.imageGrid input[type="checkbox"]:checked + img {
+  box-shadow: 0 0 10px rgba(0, 0, 255, 0.7); /* Add a blue glow effect */
+  transition: box-shadow 0.3s; /* Smooth transition for the glow effect */
+}
+/* Updated checkbox style */
+.imageDiv input[type="checkbox"] {
+  position: absolute;
+  top: 30px;
+  left: 20px;
+  width: 18px; /* Adjust the size as needed */
+  height: 16px; /* Adjust the size as needed */
+}
+
+/* Added padding for the image container */
+.imageDiv {
+  position: relative;
+  padding: 10px;
+}
+
+/* Glowing effect for the selected images */
+.imageDiv.glowing {
+  box-shadow: 0 0 10px rgba(0, 0, 255, 0.7);
+  transition: box-shadow 0.3s;
+}
+
+/* Notification style for selected images */
+.selected-images-notification {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  /* background-color: #007acc; */
+  color: #6d214f;
+  text-align: center;
+  padding: 5px 10px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 255, 0.7);
+  transition: box-shadow 0.3s;
+}
+
+/* Apply CSS to make the notification text bold and centered */
+.countNotification {
+  margin: 0;
+  font-weight: bold;
+  font-size: 2rem;
+  padding: 6px;
+}
