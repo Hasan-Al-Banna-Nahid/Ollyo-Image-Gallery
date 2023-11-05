@@ -15,7 +15,9 @@
   width: 100%;
   border: 1px solid #b2bec3;
 }
-
+.imageDiv:hover {
+  transition: transform 0.3s; /* Adjust the duration as needed */
+}
 .FeaturedImageDiv {
   grid-row: span 2; /* Make the first div span two rows */
   width: 450px !important;
@@ -30,13 +32,24 @@
 .imageGrid > div > img {
   width: 100%;
   height: 100%;
+  transition: 1s ease-in-out;
   background-color: #b2bec306 !important;
+}
+.imageDiv img:active {
+  transform: scale(
+    1
+  ); /* Reset the scaling effect on click (while the mouse button is pressed) */
+}
+button {
+  background-image: linear-gradient(to right, red purple);
+  padding: 10px;
+  font-weight: bolder !important;
+  font-size: 18px !important;
 }
 /* Image Grid Style */
 .imageGrid input[type="checkbox"] {
   width: 20px; /* Increase the width of the checkbox */
   height: 20px; /* Increase the height of the checkbox */
-  margin-right: 10px; /* Add some spacing between the checkbox and the image */
   transform: scale(1.5); /* Increase the size of the checkbox */
 }
 
@@ -49,7 +62,7 @@
 .imageDiv input[type="checkbox"] {
   position: absolute;
   top: 30px;
-  left: 20px;
+  left: 30px;
   width: 18px; /* Adjust the size as needed */
   height: 16px; /* Adjust the size as needed */
 }
@@ -86,4 +99,114 @@
   font-weight: bold;
   font-size: 2rem;
   padding: 6px;
+}
+.imageDiv {
+  transition: transform 0.3s ease;
+}
+/* CSS for the premium design */
+/* CSS for the premium design with reduced gap */
+.Filter,
+.colorFilter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #28047d; /* Dark background color */
+  padding: 15px;
+  border-radius: 10px; /* Rounded corners */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); /* Subtle box shadow */
+  color: white;
+  gap: 10px;
+}
+
+:root {
+  --arrow-bg: rgba(255, 255, 255, 0.3);
+  --arrow-icon: url(https://upload.wikimedia.org/wikipedia/commons/9/9d/Caret_down_font_awesome_whitevariation.svg);
+  --option-bg: white;
+  --select-bg: rgba(255, 255, 255, 0.2);
+}
+* {
+  box-sizing: border-box;
+}
+/* body {
+  background: linear-gradient(35deg, red, purple);
+} */
+/* <select> styles */
+select {
+  /* Reset */
+  appearance: none;
+  border: 0;
+  outline: 0;
+  font-weight: bold;
+  font-size: 2rem;
+  /* Personalize */
+  width: 20rem;
+  padding: 2rem;
+  background: var(--arrow-icon) no-repeat right 0.8em center / 1.4em,
+    linear-gradient(to left, var(--arrow-bg) 3em, var(--select-bg) 3em);
+  color: #d2dae2 !important;
+  border-radius: 0.25em;
+  box-shadow: 0 0 1em 0 rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  margin-right: 15px;
+
+  /* Remove IE arrow */
+  &::-ms-expand {
+    display: none;
+  }
+  /* Remove focus outline */
+  &:focus {
+    outline: none;
+  }
+  /* <option> colors */
+  option {
+    color: #550d38 !important;
+    font-weight: bold;
+    background-color: #b2bec3;
+    padding: 30px;
+    font-size: 2rem;
+  }
+}
+
+/* Reduce the gap between select elements */
+select + label {
+  margin-left: 20px;
+}
+
+/* Additional styles can be applied as needed */
+/* App.css */
+
+/* Add transitions for a smooth drag-and-drop effect */
+.imageDiv {
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+/* Highlight the dragged-over image */
+.imageDiv.drag-over {
+  transform: scale(1.05);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+/* Add a glowing effect for selected images */
+.imageDiv.glow {
+  animation: glow 1s infinite alternate;
+}
+
+@keyframes glow {
+  0% {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+  }
+}
+
+/* Style the featured image */
+.imageDiv.featured {
+  border: 2px solid #ffa500; /* Orange border for featured image */
+}
+
+/* Rest of your existing CSS styles */
+.zoomed-image {
+  transform: scale(5); /* Adjust the scale factor as needed */
+  transition: transform 0.3s; /* Add a smooth transition effect */
 }

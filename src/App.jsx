@@ -1,12 +1,99 @@
 import { useState } from "react";
 import "./App.css";
 import { useEffect } from "react";
+import FileUpload from "./Components/FileUpload";
+import ImageSlideshow from "./Components/ImageSlideshow";
 
 const App = () => {
-  const [images, setImages] = useState([]);
-  const [selectedImages, setSelectedImages] = useState([]);
+  const [images, setImages] = useState([
+    // Default images, one featured and others in sameStyleDiv
+    {
+      id: 1,
+      src: "../public/asset/image-1.webp",
+      isFeatured: true,
+      selected: false,
+    },
+    {
+      id: 2,
+      src: "../public/asset/image-2.webp",
+      isFeatured: false,
+      selected: false,
+    },
+    {
+      id: 3,
+      src: "../public/asset/image-3.webp",
+      isFeatured: false,
+      selected: false,
+    },
+    {
+      id: 4,
+      src: "../public/asset/image-4.webp",
+      isFeatured: false,
+      selected: false,
+    },
+    {
+      id: 5,
+      src: "../public/asset/image-5.webp",
+      isFeatured: false,
+      selected: false,
+    },
+    {
+      id: 6,
+      src: "../public/asset/image-6.webp",
+      isFeatured: false,
+      selected: false,
+    },
+    {
+      id: 7,
+      src: "../public/asset/image-7.webp",
+      isFeatured: false,
+      selected: false,
+    },
+    {
+      id: 8,
+      src: "../public/asset/image-8.webp",
+      isFeatured: false,
+      selected: false,
+    },
+    {
+      id: 9,
+      src: "../public/asset/image-9.webp",
+      isFeatured: false,
+      selected: false,
+    },
+    {
+      id: 10,
+      src: "../public/asset/image-10.jpeg",
+      isFeatured: false,
+      selected: false,
+    },
+    {
+      id: 11,
+      src: "../public/asset/image-11.jpeg",
+      isFeatured: false,
+      selected: false,
+    },
+  ]);
+
   const [imageInput, setImageInput] = useState(null);
-  const [count, setCount] = useState(null);
+  const [draggedImage, setDraggedImage] = useState(null);
+  const [sortCriteria, setSortCriteria] = useState("featured"); // Initial sorting criteria
+  const [sortOrder, setSortOrder] = useState("asc"); // Initial sorting order ('asc' or 'desc')
+  const [zoomedImage, setZoomedImage] = useState(null);
+  const [selectedFilter, setSelectedFilter] = useState("none");
+
+  // Apply the selected filter to the image
+  const filterStyle = {
+    filter: selectedFilter,
+  };
+
+  // Function to handle filter change
+  const handleFilterChange = (filter) => {
+    setSelectedFilter((prevFilter) => {
+      // Toggle the filter off if it's already selected
+      return prevFilter === filter ? "none" : filter;
+    });
+  };
 
   useEffect(() => {
     // Load images from local storage when the component mounts
@@ -19,98 +106,321 @@ const App = () => {
     // Save images to local storage when the images state changes
     localStorage.setItem("uploadedImages", JSON.stringify(images));
   }, [images]);
+  const sortImages = () => {
+    let sortedImages = [...images];
 
-  // Function to handle image upload
-  const handleImageUpload = (event) => {
-    const files = event.target.files;
+    if (sortCriteria === "id") {
+      sortedImages.sort((a, b) =>
+        sortOrder === "asc" ? a.id - b.id : b.id - a.id
+      );
+      sortedImages.sort((b, a) =>
+        sortOrder === "dsc" ? a.id - b.id : b.id - a.id
+      );
+    } else if (sortCriteria === "featured") {
+      sortedImages.sort((a, b) => {
+        if (a.isFeatured && !b.isFeatured) return -1;
+        if (!a.isFeatured && b.isFeatured) return 1;
+        return 0;
+      });
+      if (sortOrder === "desc") {
+        sortedImages.reverse();
+      }
+    }
 
-    if (files.length > 0) {
-      const newImages = Array.from(files).map((file) => {
-        const imageId = generateImageId();
+    return sortedImages;
+  };
 
-        // Create an object to represent the image data
-        const imageData = {
-          id: imageId,
-          isFeatured: false,
-          src: URL.createObjectURL(file),
-          selected: false, // Initially set to false
-        };
+  const sortedImages = sortImages();
+  const handleDragStart = (e, image) => {
+    setDraggedImage(image);
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/plain", JSON.stringify(image));
+  };
+  const dragOverClass = "drag-over";
+  const glowClass = "glow";
+  const featuredClass = "featured";
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.currentTarget.classList.add(dragOverClass);
 
-        return imageData; // Return the image data
+    // Prevent the default behavior to allow dropping
+    e.dataTransfer.dropEffect = "move";
+  };
+  const handleDragLeave = (e) => {
+    // Remove the visual indication when leaving the drop target
+    e.currentTarget.classList.remove(dragOverClass);
+  };
+  const handleDrop = (e, targetImage) => {
+    e.preventDefault();
+    const sourceImage = JSON.parse(e.dataTransfer.getData("text/plain"));
+    if (sourceImage.id !== targetImage.id) {
+      const updatedImages = images.map((image) => {
+        if (image.id === targetImage.id) {
+          // When dragging an image from a same styleDiv to the FeaturedImageDiv or vice versa
+          // Toggle its isFeatured property
+          if (targetImage.isFeatured === true) {
+            return { ...sourceImage, isFeatured: !sourceImage.isFeatured };
+          }
+          return { ...sourceImage, isFeatured: sourceImage.isFeatured };
+        }
+
+        if (image.id === sourceImage.id) {
+          // When moving an image to the same styleDiv, make sure it's not featured
+          return { ...targetImage, isFeatured: false };
+        }
+
+        return image;
       });
 
-      // Update the state to include the new image data
-      setImages([...images, ...newImages]);
-
-      // Clear the input field to allow uploading of more images
-      setImageInput(null);
+      setImages(updatedImages);
+      setDraggedImage(null);
+      e.currentTarget.classList.remove(dragOverClass);
     }
   };
 
-  // Function to generate a unique ID for each image
-  const generateImageId = () => {
-    return `image-${new Date().getTime()}`;
+  // Function to handle image upload
+  const handleImageUpload = (acceptedFiles) => {
+    const newImages = acceptedFiles.map((file) => ({
+      id: new Date().getTime(),
+      src: URL.createObjectURL(file),
+      isFeatured: false,
+      selected: false,
+    }));
+
+    setImages((prevImages) => [...prevImages, ...newImages]);
   };
 
   // Function to toggle 'isFeatured' for an image
-  const toggleFeatured = (imageId) => {
-    const updatedImages = images.map((image) => {
-      if (image.id === imageId) {
-        return { ...image, isFeatured: !image.isFeatured };
-      }
-      return image;
-    });
-    setImages(updatedImages);
+  const toggleFeatured = (id) => {
+    // Toggle the "isFeatured" property for the clicked image
+    setImages((prevImages) =>
+      prevImages.map((image) =>
+        image.id === id ? { ...image, isFeatured: !image.isFeatured } : image
+      )
+    );
   };
 
   // Function to toggle the selection of images
-  const toggleSelection = (imageId) => {
-    const updatedImages = images.map((image) => {
-      if (image.id === imageId) {
-        return { ...image, selected: !image.selected };
-      }
-      return image;
-    });
-    setImages(updatedImages);
+  const toggleSelection = (id) => {
+    // Toggle the "selected" property for the clicked image
+    setImages((prevImages) =>
+      prevImages.map((image) =>
+        image.id === id ? { ...image, selected: !image.selected } : image
+      )
+    );
+  };
+  const handleClick = (e, id) => {
+    e.stopPropagation(); // Prevent the click event from bubbling up to parent elements
+    toggleSelection(id);
+    // Find the clicked image by ID
+    const clickedImage = images.find((image) => image.id === id);
+
+    if (clickedImage) {
+      // Determine the styleDivId for the clicked image
+      const styleDivId = clickedImage.styleDivId;
+
+      // Set isFeatured to true for the clicked image and any other image within the same styleDiv
+      setImages((prevImages) =>
+        prevImages.map((image) =>
+          image.styleDivId === styleDivId
+            ? { ...image, isFeatured: true }
+            : image
+        )
+      );
+    }
   };
 
   // Function to count the number of selected images
 
+  const deleteSelectedImages = () => {
+    const remainingImages = images.filter((image) => !image.selected);
+    setImages(remainingImages);
+  };
+
+  const handleZoom = (id) => {
+    setZoomedImage(id);
+  };
+
   return (
     <div>
-      <div className="imageGrid">
-        {images && (
-          <>
-            {images.map((image, index) => (
-              <div
-                key={image.id}
-                className={`imageDiv ${image.isFeatured ? "featured" : ""} ${
-                  image.selected ? "glowing" : ""
-                } ${index === 0 ? "FeaturedImageDiv" : "sameStyleDiv"}`}
-              >
-                <img
-                  src={image.src}
-                  alt="Image"
-                  onClick={() => toggleFeatured(image.id)}
-                />
-                <input
-                  type="checkbox"
-                  checked={image.selected}
-                  onChange={() => toggleSelection(image.id)}
-                />
+      <div className="colorFilter text-[#182C61] font-bold text-[18px]">
+        <div>
+          <button onClick={() => handleFilterChange("none")}>No Filter</button>
+        </div>
+        <div>
+          {" "}
+          <button onClick={() => handleFilterChange("grayscale(100%)")}>
+            Grayscale
+          </button>
+        </div>
+
+        <div>
+          <button onClick={() => handleFilterChange("sepia(100%)")}>
+            Sepia
+          </button>
+        </div>
+        <div>
+          <button onClick={() => handleFilterChange("brightness(70%)")}>
+            Brightness
+          </button>
+        </div>
+
+        <div>
+          <button onClick={() => handleFilterChange("contrast(70%)")}>
+            contrast
+          </button>
+        </div>
+        <div>
+          <button onClick={() => handleFilterChange("blur(50px)")}>blur</button>
+        </div>
+        <div>
+          <button onClick={() => handleFilterChange("hue-rotate(100deg)")}>
+            hue-rotate
+          </button>
+        </div>
+        <div>
+          <button onClick={() => handleFilterChange("saturate(100%)")}>
+            saturate
+          </button>
+        </div>
+        <div>
+          <button onClick={() => handleFilterChange("invert(100%)")}>
+            invert
+          </button>
+        </div>
+        <div>
+          <button
+            onClick={() =>
+              handleFilterChange(
+                "drop-shadow(16px 16px 10px rgba(0, 0, 0, 0.3))"
+              )
+            }
+          >
+            drop-shadow
+          </button>
+        </div>
+        <div>
+          <button
+            onClick={() =>
+              handleFilterChange(
+                "grayscale(100%) sepia(100%) hue-rotate(100deg) saturate(100%)"
+              )
+            }
+          >
+            Combination 1
+          </button>
+        </div>
+        <div>
+          <button
+            onClick={() =>
+              handleFilterChange(
+                "brightness(100%) contrast(100%) blur(0px) grayscale(0%) sepia(0%) hue-rotate(0deg) saturate(100%)"
+              )
+            }
+          >
+            Combination 2
+          </button>
+        </div>
+      </div>
+      <div className="Filter">
+        <label htmlFor="sortCriteria" className="font-bold text-2xl">
+          Sort by:
+        </label>
+        <select
+          id="sortCriteria"
+          value={sortCriteria}
+          onChange={(e) => setSortCriteria(e.target.value)}
+          className="font-bold text-2xl p-4"
+        >
+          <option value="featured">Featured</option>
+          <option value="id">ID</option>
+
+          {/* Add more sorting criteria options if needed */}
+        </select>
+        <label htmlFor="sortOrder" className="font-bold text-2xl">
+          Order:
+        </label>
+        <select
+          id="sortOrder"
+          value={sortOrder}
+          onChange={(e) => setSortOrder(e.target.value)}
+          className="font-bold text-2xl p-4"
+        >
+          <option value="asc">Ascending</option>
+          <option value="desc">Descending</option>
+        </select>
+      </div>
+
+      {images.some((image) => image.selected) && (
+        <ImageSlideshow
+          images={images}
+          selectedImages={images
+            .filter((image) => image.selected)
+            .map((image) => image.id)}
+        />
+      )}
+      <div className="w-[600px] mx-auto p-6">
+        <div className="flex justify-between items-center gap-6">
+          {images.some((image) => image.selected) ? (
+            <>
+              <div className="selectedImageCount text-[26px] font-bold text-[#182C61]">
+                {images.filter((image) => image.selected).length} Image selected
               </div>
-            ))}
-            <div className="sameStyleDiv">
-              <input
-                type="file"
-                placeholder="Please add Picture"
-                onChange={handleImageUpload}
-                multiple
-                ref={(input) => setImageInput(input)}
-              />
-            </div>
-          </>
-        )}
+              <div>
+                <button
+                  onClick={deleteSelectedImages}
+                  className=" link-error font-bold text-[22px]"
+                >
+                  Delete Selected
+                </button>
+              </div>
+            </>
+          ) : (
+            <h2 className="text-[28px] font-bold text-[#182C61]">Gallery</h2>
+          )}
+        </div>
+        <hr className="w-[600px] border-red-200 border-2 mt-2" />
+      </div>
+      <div className="imageGrid my-12">
+        {sortedImages.map((image, index) => (
+          <div
+            key={index}
+            className={`imageDiv ${image.isFeatured ? featuredClass : ""} ${
+              image.selected ? glowClass : ""
+            } ${image.isFeatured ? "FeaturedImageDiv" : "sameStyleDiv"}`}
+            onClick={() => {
+              toggleSelection(image.id);
+            }}
+            draggable={true}
+            onDragStart={(e) => handleDragStart(e, image)}
+            onDragOver={(e) => handleDragOver(e)}
+            onDragLeave={(e) => handleDragLeave(e)}
+            onDrop={(e) => handleDrop(e, image)}
+          >
+            <img
+              src={image.src}
+              alt="Image"
+              id="zoom"
+              onClick={() => {
+                handleClick(image.id);
+                toggleFeatured(image.id);
+                handleZoom(image.id);
+              }}
+              className={zoomedImage === image.id ? "zoomed-image" : ""}
+              style={filterStyle}
+            />
+
+            <input
+              type="checkbox"
+              checked={image.selected}
+              onChange={() => {}}
+            />
+          </div>
+        ))}
+
+        <div className="sameStyleDiv">
+          <FileUpload handleImageUpload={handleImageUpload} />
+        </div>
       </div>
     </div>
   );
