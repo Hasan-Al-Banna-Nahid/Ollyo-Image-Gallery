@@ -81,6 +81,7 @@ const App = () => {
   const [zoomedImage, setZoomedImage] = useState(null);
   const [selectedFilter, setSelectedFilter] = useState("none");
   const [slideshow, setSlideShow] = useState(false);
+  const [draggedDivPosition, setDraggedDivPosition] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
     // Load images from local storage when the component mounts
@@ -258,6 +259,17 @@ const App = () => {
   // Delete Images
   const deleteSelectedImages = () => {
     const remainingImages = images.filter((image) => !image.selected);
+
+    // Check if there are no featured images among the remaining images
+    const noFeaturedImages = remainingImages.every(
+      (image) => !image.isFeatured
+    );
+
+    // If no featured images are remaining, set the first image as featured
+    if (noFeaturedImages && remainingImages.length > 0) {
+      remainingImages[0].isFeatured = true;
+    }
+
     setImages(remainingImages);
     updateFeaturedImage(); // Update the featured image after deletion
   };
