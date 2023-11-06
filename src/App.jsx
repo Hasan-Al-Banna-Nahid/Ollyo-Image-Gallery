@@ -9,78 +9,94 @@ const App = () => {
     // Default images, one featured and others in sameStyleDiv
     {
       id: 1,
-      src: "../public/asset/image-1.webp",
+      src: "/asset/image-1.webp",
       isFeatured: true,
       selected: false,
     },
     {
       id: 2,
-      src: "../public/asset/image-2.webp",
+      src: "/asset/image-2.webp",
       isFeatured: false,
       selected: false,
     },
     {
       id: 3,
-      src: "../public/asset/image-3.webp",
+      src: "/asset/image-3.webp",
       isFeatured: false,
       selected: false,
     },
     {
       id: 4,
-      src: "../public/asset/image-4.webp",
+      src: "/asset/image-4.webp",
       isFeatured: false,
       selected: false,
     },
     {
       id: 5,
-      src: "../public/asset/image-5.webp",
+      src: "/asset/image-5.webp",
       isFeatured: false,
       selected: false,
     },
     {
       id: 6,
-      src: "../public/asset/image-6.webp",
+      src: "/asset/image-6.webp",
       isFeatured: false,
       selected: false,
     },
     {
       id: 7,
-      src: "../public/asset/image-7.webp",
+      src: "/asset/image-7.webp",
       isFeatured: false,
       selected: false,
     },
     {
       id: 8,
-      src: "../public/asset/image-8.webp",
+      src: "/asset/image-8.webp",
       isFeatured: false,
       selected: false,
     },
     {
       id: 9,
-      src: "../public/asset/image-9.webp",
+      src: "/asset/image-9.webp",
       isFeatured: false,
       selected: false,
     },
     {
       id: 10,
-      src: "../public/asset/image-10.jpeg",
+      src: "/asset/image-10.jpeg",
       isFeatured: false,
       selected: false,
     },
     {
       id: 11,
-      src: "../public/asset/image-11.jpeg",
+      src: "/asset/image-11.jpeg",
       isFeatured: false,
       selected: false,
     },
   ]);
-
-  const [imageInput, setImageInput] = useState(null);
-  const [draggedImage, setDraggedImage] = useState(null);
+  // States
+  const [, setDraggedImage] = useState(null);
   const [sortCriteria, setSortCriteria] = useState("featured"); // Initial sorting criteria
   const [sortOrder, setSortOrder] = useState("asc"); // Initial sorting order ('asc' or 'desc')
   const [zoomedImage, setZoomedImage] = useState(null);
   const [selectedFilter, setSelectedFilter] = useState("none");
+  const [slideshow, setSlideShow] = useState(false);
+
+  useEffect(() => {
+    // Load images from local storage when the component mounts
+    const storedImages =
+      JSON.parse(localStorage.getItem("uploadedImages")) || [];
+    setImages(storedImages);
+  }, []);
+
+  useEffect(() => {
+    // Save images to local storage when the images state changes
+    localStorage.setItem("uploadedImages", JSON.stringify(images));
+  }, [images]);
+
+  const handleSlideShow = () => {
+    setSlideShow((prev) => !prev);
+  };
 
   // Apply the selected filter to the image
   const filterStyle = {
@@ -95,17 +111,7 @@ const App = () => {
     });
   };
 
-  useEffect(() => {
-    // Load images from local storage when the component mounts
-    const storedImages =
-      JSON.parse(localStorage.getItem("uploadedImages")) || [];
-    setImages(storedImages);
-  }, []);
-
-  useEffect(() => {
-    // Save images to local storage when the images state changes
-    localStorage.setItem("uploadedImages", JSON.stringify(images));
-  }, [images]);
+  // Sorting The Images
   const sortImages = () => {
     let sortedImages = [...images];
 
@@ -131,14 +137,16 @@ const App = () => {
   };
 
   const sortedImages = sortImages();
+  // Drag And Drop Images
+  const dragOverClass = "drag-over";
+  const glowClass = "glow";
+  const featuredClass = "featured";
   const handleDragStart = (e, image) => {
     setDraggedImage(image);
     e.dataTransfer.effectAllowed = "move";
     e.dataTransfer.setData("text/plain", JSON.stringify(image));
   };
-  const dragOverClass = "drag-over";
-  const glowClass = "glow";
-  const featuredClass = "featured";
+
   const handleDragOver = (e) => {
     e.preventDefault();
     e.currentTarget.classList.add(dragOverClass);
@@ -232,18 +240,20 @@ const App = () => {
 
   // Function to count the number of selected images
 
+  // Delete Images
   const deleteSelectedImages = () => {
     const remainingImages = images.filter((image) => !image.selected);
     setImages(remainingImages);
   };
 
+  // Zoom Effect
   const handleZoom = (id) => {
     setZoomedImage(id);
   };
 
   return (
     <div>
-      <div className="colorFilter text-[#182C61] font-bold text-[18px]">
+      <div className="colorFilter text-[#182C61] bg-[#6D214F] font-bold text-[18px]">
         <div>
           <button onClick={() => handleFilterChange("none")}>No Filter</button>
         </div>
@@ -351,16 +361,18 @@ const App = () => {
         </select>
       </div>
 
-      {images.some((image) => image.selected) && (
-        <ImageSlideshow
-          images={images}
-          selectedImages={images
-            .filter((image) => image.selected)
-            .map((image) => image.id)}
-        />
-      )}
-      <div className="w-[600px] mx-auto p-6">
-        <div className="flex justify-between items-center gap-6">
+      {slideshow === true
+        ? images.some((image) => image.selected) && (
+            <ImageSlideshow
+              images={images}
+              selectedImages={images
+                .filter((image) => image.selected)
+                .map((image) => image.id)}
+            />
+          )
+        : ""}
+      <div className="md:w-[800px] mx-auto p-6">
+        <div className="md:flex justify-between mx-auto items-center gap-6">
           {images.some((image) => image.selected) ? (
             <>
               <div className="selectedImageCount text-[26px] font-bold text-[#182C61]">
@@ -369,9 +381,17 @@ const App = () => {
               <div>
                 <button
                   onClick={deleteSelectedImages}
-                  className=" link-error font-bold text-[22px]"
+                  className=" link-error font-bold text-[26px] h-[70px]"
                 >
                   Delete Selected
+                </button>
+              </div>
+              <div>
+                <button
+                  onClick={handleSlideShow}
+                  className="btn btn-primary p-4 w-[200px]"
+                >
+                  View SlideShow
                 </button>
               </div>
             </>
@@ -379,8 +399,11 @@ const App = () => {
             <h2 className="text-[28px] font-bold text-[#182C61]">Gallery</h2>
           )}
         </div>
-        <hr className="w-[600px] border-red-200 border-2 mt-2" />
+        <hr className="md:w-[800px] border-red-200 border-2 mt-2" />
       </div>
+      <h2 className="text-red-600 font-bold text-center">
+        User Can Drag And Drop Images Only When SortBy : Featured is Selected
+      </h2>
       <div className="imageGrid my-12">
         {sortedImages.map((image, index) => (
           <div

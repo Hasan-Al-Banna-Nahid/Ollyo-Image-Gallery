@@ -12,13 +12,13 @@ const ImageSlideshow = ({ images, selectedImages }) => {
   return (
     <div className="slideshow-container mx-auto w-[650px] bg-slate-700 p-6 rounded-lg">
       <Carousel
-        showStatus={false}
-        showThumbs={false}
+        showStatus={true}
+        showThumbs={true}
         infiniteLoop
         autoPlay
         dynamicHeight={1}
         width={600}
-        swipeable={true}
+        interval={1000}
       >
         {selectedImagesList.map((image) => (
           <div key={image.id}>

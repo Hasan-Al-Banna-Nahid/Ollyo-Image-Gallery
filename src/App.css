@@ -1,3 +1,12 @@
+:root {
+  --arrow-bg: rgba(255, 255, 255, 0.3);
+  --arrow-icon: url(https://upload.wikimedia.org/wikipedia/commons/9/9d/Caret_down_font_awesome_whitevariation.svg);
+  --option-bg: white;
+  --select-bg: rgba(255, 255, 255, 0.2);
+}
+* {
+  box-sizing: border-box;
+}
 /* Image Grid Style */
 .imageGrid {
   display: grid;
@@ -118,18 +127,6 @@ button {
   gap: 10px;
 }
 
-:root {
-  --arrow-bg: rgba(255, 255, 255, 0.3);
-  --arrow-icon: url(https://upload.wikimedia.org/wikipedia/commons/9/9d/Caret_down_font_awesome_whitevariation.svg);
-  --option-bg: white;
-  --select-bg: rgba(255, 255, 255, 0.2);
-}
-* {
-  box-sizing: border-box;
-}
-/* body {
-  background: linear-gradient(35deg, red, purple);
-} */
 /* <select> styles */
 select {
   /* Reset */
@@ -172,17 +169,16 @@ select + label {
   margin-left: 20px;
 }
 
-/* Additional styles can be applied as needed */
 /* App.css */
 
 /* Add transitions for a smooth drag-and-drop effect */
 .imageDiv {
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: transform 1s, box-shadow 0.2s;
 }
 
 /* Highlight the dragged-over image */
 .imageDiv.drag-over {
-  transform: scale(1.05);
+  transform: scale(1.5);
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
@@ -190,7 +186,15 @@ select + label {
 .imageDiv.glow {
   animation: glow 1s infinite alternate;
 }
+/* Style the featured image */
+.imageDiv.featured {
+  border: 2px solid #ffa500; /* Orange border for featured image */
+}
 
+.zoomed-image {
+  transform: scale(5); /* Adjust the scale factor as needed */
+  transition: transform 0.3s; /* Add a smooth transition effect */
+}
 @keyframes glow {
   0% {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
@@ -199,14 +203,67 @@ select + label {
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
   }
 }
-
-/* Style the featured image */
-.imageDiv.featured {
-  border: 2px solid #ffa500; /* Orange border for featured image */
+/* Media Queries For Responsive Design */
+@media screen and (max-width: 576px) {
+  * {
+    max-width: fit-content;
+  }
+  .imageGrid {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+  }
+  .Filter,
+  .colorFilter {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin: 0 auto;
+    text-align: center;
+    width: 800px;
+  }
+  .imageGrid > div {
+    max-width: fit-content;
+    border: 1px solid #b2bec3;
+  }
+  .FeaturedImageDiv {
+    grid-row: 0; /* Make the first div span two rows */
+    max-width: fit-content;
+    height: auto;
+    border-radius: 8px;
+  }
+  .sameStyleDiv {
+    width: fit-content;
+    height: auto;
+    border-radius: 8px;
+  }
 }
-
-/* Rest of your existing CSS styles */
-.zoomed-image {
-  transform: scale(5); /* Adjust the scale factor as needed */
-  transition: transform 0.3s; /* Add a smooth transition effect */
+@media screen and (min-width: 578px) and (max-width: 1024px) {
+  * {
+    max-width: fit-content;
+  }
+  .imageGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .Filter,
+  .colorFilter {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .imageGrid > div {
+    max-width: fit-content;
+    border: 1px solid #b2bec3;
+  }
+  .FeaturedImageDiv {
+    grid-row: 0; /* Make the first div span two rows */
+    max-width: fit-content;
+    height: auto;
+    border-radius: 8px;
+  }
+  .sameStyleDiv {
+    width: fit-content;
+    height: auto;
+    border-radius: 8px;
+  }
 }
