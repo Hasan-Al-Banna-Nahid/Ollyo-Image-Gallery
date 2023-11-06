@@ -75,7 +75,7 @@ const App = () => {
     },
   ]);
   // States
-  const [, setDraggedImage] = useState(null);
+  const [draggedImage, setDraggedImage] = useState(null);
   const [sortCriteria, setSortCriteria] = useState("featured"); // Initial sorting criteria
   const [sortOrder, setSortOrder] = useState("asc"); // Initial sorting order ('asc' or 'desc')
   const [zoomedImage, setZoomedImage] = useState(null);
@@ -113,6 +113,7 @@ const App = () => {
   };
 
   // Sorting The Images
+
   const sortImages = () => {
     let sortedImages = [...images];
 
@@ -136,12 +137,12 @@ const App = () => {
 
     return sortedImages;
   };
-
   const sortedImages = sortImages();
   // Drag And Drop Images
   const dragOverClass = "drag-over";
   const glowClass = "glow";
   const featuredClass = "featured";
+
   const handleDragStart = (e, image) => {
     setDraggedImage(image);
     e.dataTransfer.effectAllowed = "move";
@@ -162,6 +163,7 @@ const App = () => {
   const handleDrop = (e, targetImage) => {
     e.preventDefault();
     const sourceImage = JSON.parse(e.dataTransfer.getData("text/plain"));
+
     if (sourceImage.id !== targetImage.id) {
       const updatedImages = images.map((image) => {
         if (image.id === targetImage.id) {
