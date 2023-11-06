@@ -253,7 +253,7 @@ const App = () => {
 
   return (
     <div>
-      <div className="colorFilter text-[#182C61] bg-[#6D214F] font-bold text-[18px]">
+      <div className="colorFilter text-[#182C61] bg-[#6D214F] font-bold text-[14px]">
         <div>
           <button onClick={() => handleFilterChange("none")}>No Filter</button>
         </div>
