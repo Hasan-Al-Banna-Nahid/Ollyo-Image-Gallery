@@ -191,7 +191,7 @@ const App = () => {
     const newImages = acceptedFiles.map((file) => ({
       id: new Date().getTime(),
       src: URL.createObjectURL(file),
-      isFeatured: false,
+      isFeatured: images.length === 0,
       selected: false,
     }));
 
@@ -239,11 +239,27 @@ const App = () => {
   };
 
   // Function to count the number of selected images
+  const updateFeaturedImage = () => {
+    const featuredImage = images.find((image) => image.isFeatured);
 
+    // If there's no featured image, set the first image as featured (if available)
+    if (!featuredImage && images.length > 0) {
+      images[0].isFeatured = true;
+    } else if (featuredImage) {
+      // If the featured image was deleted, set the first available image as featured
+      const newFeaturedImage = images.find(
+        (image) => image.id !== featuredImage.id
+      );
+      if (newFeaturedImage) {
+        newFeaturedImage.isFeatured = true;
+      }
+    }
+  };
   // Delete Images
   const deleteSelectedImages = () => {
     const remainingImages = images.filter((image) => !image.selected);
     setImages(remainingImages);
+    updateFeaturedImage(); // Update the featured image after deletion
   };
 
   // Zoom Effect
