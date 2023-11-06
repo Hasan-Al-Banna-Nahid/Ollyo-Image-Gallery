@@ -138,6 +138,7 @@ const App = () => {
     return sortedImages;
   };
   const sortedImages = sortImages();
+
   // Drag And Drop Images
   const dragOverClass = "drag-over";
   const glowClass = "glow";
