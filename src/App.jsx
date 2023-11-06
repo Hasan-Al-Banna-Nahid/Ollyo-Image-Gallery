@@ -281,6 +281,18 @@ const App = () => {
   const handleZoom = (id) => {
     setZoomedImage(id);
   };
+  const handleSelectAll = () => {
+    const allSelected = isAllSelected();
+    const updatedImages = images.map((image) => ({
+      ...image,
+      selected: !allSelected,
+    }));
+    setImages(updatedImages);
+  };
+
+  const isAllSelected = () => {
+    return images.every((image) => image.selected);
+  };
 
   return (
     <div>
@@ -435,6 +447,18 @@ const App = () => {
       <h2 className="text-red-600 font-bold text-center">
         User Can Drag And Drop Images Only When SortBy : Featured is Selected
       </h2>
+      <div className="w-[400px] mx-auto p-6 text-center text-purple-800 font-bold ">
+        <label htmlFor="" className="text-2xl font-bold">
+          Select All
+        </label>
+        <input
+          type="checkbox"
+          multiple
+          onChange={handleSelectAll}
+          checked={isAllSelected()}
+          className="w-[60px] h-[40px]"
+        />
+      </div>
       <div className="imageGrid my-12">
         {sortedImages.map((image, index) => (
           <div
